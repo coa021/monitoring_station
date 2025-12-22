@@ -1,8 +1,6 @@
 #include "lcd_driver.h"
 #include "stm32f411xx_gpio_driver.h"
 
-#include "helpers.h"
-
 
 static void LCD_Enable_Pulse(void);
 static void LCD_Send_Nibble(uint8_t nibble);
@@ -12,15 +10,24 @@ static void LCD_GPIO_Init(void);
 
 static void LCD_Send_Byte(uint8_t byte, uint8_t rs_value);
 
+// static helpers definition
+static void LCD_Delay_us(uint32_t us) {
+	for (volatile uint32_t i = 0; i < us * 4; i++)
+		;	//
+}
+static void LCD_Delay_ms(uint32_t ms) {
+	for (uint32_t i = 0; i < ms; i++)
+		LCD_Delay_us(1000);
+}
 // TODO: document all the functions
 static void LCD_Enable_Pulse(void) {
 	// very important
 	GPIO_WriteToOutputPin(LCD_PORT, LCD_EN_PIN, GPIO_PIN_RESET);  // low
-	delay_us(1);
+	LCD_Delay_us(1);
 	GPIO_WriteToOutputPin(LCD_PORT, LCD_EN_PIN, GPIO_PIN_SET);    // rising edge
-	delay_us(1);
+	LCD_Delay_us(1);
 	GPIO_WriteToOutputPin(LCD_PORT, LCD_EN_PIN, GPIO_PIN_RESET); // falling edge
-	delay_us(100);
+	LCD_Delay_us(100);
 }
 
 static void LCD_Send_Byte(uint8_t byte, uint8_t rs_value) {
@@ -76,7 +83,7 @@ static void LCD_GPIO_Init(void) {
 // functions
 void LCD_Init(void) {
 	LCD_GPIO_Init();
-	delay_ms(50);    // wait to power up
+	LCD_Delay_ms(50);    // wait to power up
 
 	// set RS and EN low initially
 	GPIO_WriteToOutputPin(LCD_PORT, LCD_RS_PIN, GPIO_PIN_RESET);
@@ -85,13 +92,13 @@ void LCD_Init(void) {
 	// init 4bit mode
 	// the delays are very fucking important
 	LCD_Send_Nibble(LCD_INIT_8BIT_MODE);
-	delay_us(4500);
+	LCD_Delay_us(4500);
 
 	LCD_Send_Nibble(LCD_INIT_8BIT_MODE);
-	delay_us(4500);
+	LCD_Delay_us(4500);
 
 	LCD_Send_Nibble(LCD_INIT_8BIT_MODE);
-	delay_us(150);
+	LCD_Delay_us(150);
 
 	LCD_Send_Nibble(LCD_INIT_4BIT_MODE);
 
@@ -104,7 +111,7 @@ void LCD_Init(void) {
 
 	// Clear display
 	LCD_Send_Command(LCD_CMD_CLEAR_DISPLAY);
-	delay_us(2000);
+	LCD_Delay_us(2000);
 
 	// Entry mode
 	LCD_Send_Command(
@@ -113,7 +120,7 @@ void LCD_Init(void) {
 
 void LCD_Clear(void) {
 	LCD_Send_Command(LCD_CMD_CLEAR_DISPLAY);
-	delay_us(2000);
+	LCD_Delay_us(2000);
 }
 
 void LCD_SetCursor(uint8_t row, uint8_t col) {

@@ -1,77 +1,54 @@
 #include "stm32f411xx.h"
 #include "lcd_driver.h"
+#include "dht11_driver.h"
 
-void delay_ms(uint32_t ms) {
+void Delay_ms(uint32_t ms) {
 	for (uint32_t i = 0; i < ms * 1000; i++)
 		;
 }
 
 int main(void) {
+	DHT11_Data_t sensor_data;
+	uint8_t read_result;
 
 	LCD_Init();
+	DHT11_Init();
 
 	LCD_Clear();
 	LCD_SetCursor(0, 0);
-	LCD_Print("LCD Test v1.0");
+	LCD_Print("DHT11 + LCD");
 	LCD_SetCursor(1, 0);
-	LCD_Print("Driver Works!");
-	delay_ms(2000);
-
-	LCD_Clear();
-	LCD_SetCursor(0, 0);
-	LCD_Print("Numbers:");
-	LCD_SetCursor(1, 0);
-	LCD_PrintNumber(12345);
-	delay_ms(2000);
-
-	LCD_Clear();
-	LCD_SetCursor(0, 0);
-	LCD_Print("Negative:");
-	LCD_SetCursor(1, 0);
-	LCD_PrintNumber(-999);
-	delay_ms(2000);
-
-	LCD_Clear();
-	LCD_SetCursor(0, 0);
-	LCD_Print("Counting:");
-
-	for (int i = 0; i <= 20; i++) {
-		LCD_SetCursor(1, 0);
-		LCD_Print("Count: ");
-		LCD_PrintNumber(i);
-		LCD_Print("  ");
-		delay_ms(500);
-	}
-
-	LCD_Clear();
-	LCD_SetCursor(0, 0);
-	LCD_Print("Scrolling...");
-	delay_ms(1000);
-
-	char *message = "Hello World! This is a long message that scrolls.";
-	for (int pos = 0; pos < 35; pos++) {
-		LCD_SetCursor(1, 0);
-		// Print 16 characters starting from pos
-		for (int i = 0; i < 16; i++) {
-			if (message[pos + i] != '\0') {
-				char temp[2] = { message[pos + i], '\0' };
-				LCD_Print(temp);
-			} else {
-				LCD_Print(" ");
-			}
-		}
-		delay_ms(300);
-	}
-
-	// Test 6: All done
-	LCD_Clear();
-	LCD_SetCursor(0, 0);
-	LCD_Print("All Tests");
-	LCD_SetCursor(1, 0);
-	LCD_Print("Passed!");
+	LCD_Print("Starting...");
+	Delay_ms(2000);
 
 	while (1) {
+		read_result = DHT11_Read(&sensor_data);
+
+		if (read_result == DHT11_OK) {
+			LCD_SetCursor(0, 0);
+			LCD_Print("Temp: ");
+			LCD_PrintNumber(sensor_data.temperature_int);
+			LCD_Print(".");
+			LCD_PrintNumber(sensor_data.temperature_dec);
+			LCD_Print("C");
+
+			LCD_SetCursor(1, 0);
+			LCD_Print("Humid: ");
+			LCD_PrintNumber(sensor_data.humidity_int);
+			LCD_Print(".");
+			LCD_PrintNumber(sensor_data.humidity_dec);
+			LCD_Print("%");
+		} else {
+			LCD_Clear();
+			LCD_SetCursor(0, 0);
+			LCD_Print("Trouble reading!");
+			LCD_SetCursor(1, 0);
+			LCD_Print("Debug code pls");
+		}
+
+		Delay_ms(2000);	// 2s between reads
 	}
+
 
 	return 0;
 }
