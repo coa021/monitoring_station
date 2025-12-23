@@ -197,6 +197,40 @@ typedef struct {
 	__vo uint32_t FLTR;			// FLTR register (digital/analog filter register)					0x24
 } I2C_RegDef_t;
 
+
+
+// TODO: temp solution, will revisit once i finish whole chapter
+// ADC individual peripheral registers
+typedef struct {
+    __vo uint32_t SR;      // ADC status register                       0x00
+    __vo uint32_t CR1;     // ADC control register 1                    0x04
+    __vo uint32_t CR2;     // ADC control register 2                    0x08
+    __vo uint32_t SMPR1;   // ADC sample time register 1                0x0C
+    __vo uint32_t SMPR2;   // ADC sample time register 2                0x10
+    __vo uint32_t JOFR1;   // ADC injected channel offset 1             0x14
+    __vo uint32_t JOFR2;   // ADC injected channel offset 2             0x18
+    __vo uint32_t JOFR3;   // ADC injected channel offset 3             0x1C
+    __vo uint32_t JOFR4;   // ADC injected channel offset 4             0x20
+    __vo uint32_t HTR;     // ADC watchdog high threshold               0x24
+    __vo uint32_t LTR;     // ADC watchdog low threshold                0x28
+    __vo uint32_t SQR1;    // ADC regular sequence register 1           0x2C
+    __vo uint32_t SQR2;    // ADC regular sequence register 2           0x30
+    __vo uint32_t SQR3;    // ADC regular sequence register 3           0x34
+    __vo uint32_t JSQR;    // ADC injected sequence register            0x38
+    __vo uint32_t JDR1;    // ADC injected data register 1              0x3C
+    __vo uint32_t JDR2;    // ADC injected data register 2              0x40
+    __vo uint32_t JDR3;    // ADC injected data register 3              0x44
+    __vo uint32_t JDR4;    // ADC injected data register 4              0x48
+    __vo uint32_t DR;      // ADC regular data register                 0x4C
+} ADC_TypeDef;
+
+// adc common registers, shared between all ADC peripherals
+typedef struct {
+    __vo uint32_t CSR;     // ADC Common status register            0x00
+    __vo uint32_t CCR;     // ADC Common control register           0x04
+    __vo uint32_t CDR;     // ADC Common regular data register      0x08
+} ADC_Common_TypeDef;
+
 // Peripheral definitions
 #define GPIOA				((GPIO_RegDef_t*)GPIOA_BASE_ADDR)
 #define GPIOB				((GPIO_RegDef_t*)GPIOB_BASE_ADDR)
@@ -221,6 +255,10 @@ typedef struct {
 #define I2C2				((I2C_RegDef_t*)I2C2_BASE_ADDR)
 #define I2C3				((I2C_RegDef_t*)I2C3_BASE_ADDR)
 
+// TODO: Temp solution, will revisit this in near future
+#define ADC1                ((ADC_TypeDef *)ADC1_BASE_ADDR)
+#define ADC_COMMON_BASE     (APB2PERIPH_BASE_ADDR + 0x2300)
+#define ADC                 ((ADC_Common_TypeDef *)ADC_COMMON_BASE)
 
 // Clock enable macro for GPIOx
 #define GPIOA_PCLK_EN()		( RCC->AHB1ENR |= (1<<0) )
