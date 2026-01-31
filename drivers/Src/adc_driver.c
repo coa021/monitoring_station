@@ -85,11 +85,72 @@ void ADC_DeInit(ADC_TypeDef *pADCx) {
 }
 
 // channel config
-void ADC_ConfigChannel(ADC_TypeDef *pADCx, ADC_ChannelConfig_t *pChannelConfig);
+void ADC_ConfigChannel(ADC_TypeDef *pADCx,
+                       ADC_ChannelConfig_t *pChannelConfig) {
+  uint8_t channel = pChannelConfig->ADC_Channel;
+  uint8_t sampleTime = pChannelConfig->ADC_SamplingTime;
+  uint8_t rank = pChannelConfig->ADC_Rank;
+
+  // configure sampling time
+  if (channel < 10) {
+    // channels 0-9 use smpr2
+    pADCx->SMPR2 &= ~(7 << (3 * channel));
+    pADCx->SMPR2 |= (sampleTime << (3 * channel));
+  } else {
+    // channels 10-18 use smpr1
+    pADCx->SMPR1 &= ~(7 << (3 * (channel - 10)));
+    pADCx->SMPR1 |= (sampleTime << (3 * (channel - 10)));
+  }
+
+  // configure sequence register
+  // rank 1-6 is sqr3
+  // rank 7-12 is sqr2
+  // rank 13-16 is sqr1
+  if (rank <= 6) {
+    pADCx->SQR3 &= ~(0x1F << (5 * (rank - 1)));
+    pADCx->SQR3 |= (channel << (5 * (rank - 1)));
+  } else if (rank <= 12) {
+    pADCx->SQR2 &= ~(0x1F << (5 * (rank - 7)));
+    pADCx->SQR2 |= (channel << (5 * (rank - 7)));
+  } else {
+    pADCx->SQR1 &= ~(0x1F << (5 * (rank - 13)));
+    pADCx->SQR1 |= (channel << (5 * (rank - 13)));
+  }
+
+  // enable temperature sensor and vrefint
+  if (channel == ADC_CHANNEL_16 || channel == ADC_CHANNEL_17)
+    ADC->CCR |= (1 << 23); // tsvrefe
+
+  if (channel == ADC_CHANNEL_18)
+    ADC->CCR |= (1 << 22); // vbate
+}
 
 // ADC control
-void ADC_Enable(ADC_TypeDef *pADCx);
-void ADC_Disable(ADC_TypeDef *pADCx);
+/*
+ * @fn          ADC_Enable
+ * @brief       Enable the ADC peripheral
+ * @param[in]   pADCx - Base address of ADC peripheral
+ * @return      none
+ */
+void ADC_Enable(ADC_TypeDef *pADCx) {
+  pADCx->CR2 |= (1 << ADC_CR2_ADON);
+
+  // wait a bit for stabilization
+  for (volatile int i = 0; i < 200; i++)
+    ;
+}
+
+/*
+ * @fn          ADC_Disable
+ * @brief       Disable the ADC peripheral
+ * @param[in]   pADCx - Base address of ADC peripheral
+ * @return      none
+ */
+void ADC_Disable(ADC_TypeDef *pADCx) {
+    pADCx->CR2 &= ~(1<< ADC_CR2_ADON);
+}
+
+
 void ADC_StartConversion(ADC_TypeDef *pADCx);
 uint16_t ADC_GetConversionValue(ADC_TypeDef *pADCx);
 

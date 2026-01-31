@@ -22,7 +22,7 @@ typedef struct {
 
 typedef struct {
 	uint8_t ADC_Channel;			// @ADC_Channel
-	uint8_t ADC_SamlingTime;		// @ADC_SamlingTime
+	uint8_t ADC_SamplingTime;		// @ADC_SamlingTime
 	uint8_t ADC_Rank;				// @ADC_Rank
 } ADC_ChannelConfig_t;
 
