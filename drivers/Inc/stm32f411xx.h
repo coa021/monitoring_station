@@ -226,9 +226,27 @@ typedef struct {
 
 // adc common registers, shared between all ADC peripherals
 typedef struct {
-    __vo uint32_t CSR;     // ADC Common status register            0x00
-    __vo uint32_t CCR;     // ADC Common control register           0x04
-    __vo uint32_t CDR;     // ADC Common regular data register      0x08
+	__vo uint32_t SR;			// ADC status register						0x00
+	__vo uint32_t CR1;			// ADC control register 1					0x04
+	__vo uint32_t CR2;			// ADC control register 2					0x08
+	__vo uint32_t SMPR1;		// ADC sample time register 1				0x0c
+	__vo uint32_t SMPR2;		// ADC sample time register 2				0x10
+	__vo uint32_t JOFR1;		// ADC injected channel offset 1			0x14
+	__vo uint32_t JOFR2;		// ADC injected channel offset 2			0x18
+	__vo uint32_t JOFR3;		// ADC injected channel offset 3			0x1C
+	__vo uint32_t JOFR4;		// ADC injected channel offset 4			0x20
+	__vo uint32_t HTR;			// ADC watchdog high threshold				0x24
+	__vo uint32_t LTR;			// ADC watchdog low threshold				0x28
+	__vo uint32_t SQR1;			// ADC regular sequence register 1			0x2C
+	__vo uint32_t SQR2;			// ADC regular sequence register 2			0x30
+	__vo uint32_t SQR3;			// ADC regular sequence register 3			0x34
+	__vo uint32_t JSQR;			// ADC injected sequence register			0x38
+	__vo uint32_t JDR1;			// ADC injected data register 1				0x3C
+	__vo uint32_t JDR2;			// ADC injected data register 2				0x40
+	__vo uint32_t JDR3;			// ADC injected data register 3				0x44
+	__vo uint32_t JDR4;			// ADC injected data register 4				0x48
+	__vo uint32_t DR;			// ADC regulard data register				0x4C
+
 } ADC_Common_TypeDef;
 
 // Peripheral definitions
