@@ -17,7 +17,7 @@ typedef struct {
 
 typedef struct {
   ADC_TypeDef *pADCx;        // Base address of ADC peripheral
-  ADC_Config_t ADC_Config_t; // ADC config settings
+  ADC_Config_t ADC_Config;   // ADC config settings
 } ADC_Handle_t;
 
 typedef struct {
@@ -106,9 +106,6 @@ typedef struct {
 #define ADC_FLAG_STRT				(1 << ADC_SR_STRT)
 #define ADC_FLAG_OVR				(1 << ADC_SR_OVR)
 
-
-
-
 // API Section
 
 // Peripheral clock control
@@ -135,12 +132,9 @@ void ADC_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnOrDi);
 void ADC_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority);
 void ADC_ITConfig(ADC_TypeDef *pADCx, uint32_t ADC_IT, uint8_t EnOrDi);
 
-
 // flag status
 uint8_t ADC_GetFlagStatus(ADC_TypeDef *pADCx, uint32_t ADC_FLAG);
 void ADC_ClearFlag(ADC_TypeDef *pADCx, uint32_t ADC_FLAG);
-
-
 
 // simplified api helpers
 

@@ -226,26 +226,9 @@ typedef struct {
 
 // adc common registers, shared between all ADC peripherals
 typedef struct {
-	__vo uint32_t SR;			// ADC status register						0x00
-	__vo uint32_t CR1;			// ADC control register 1					0x04
-	__vo uint32_t CR2;			// ADC control register 2					0x08
-	__vo uint32_t SMPR1;		// ADC sample time register 1				0x0c
-	__vo uint32_t SMPR2;		// ADC sample time register 2				0x10
-	__vo uint32_t JOFR1;		// ADC injected channel offset 1			0x14
-	__vo uint32_t JOFR2;		// ADC injected channel offset 2			0x18
-	__vo uint32_t JOFR3;		// ADC injected channel offset 3			0x1C
-	__vo uint32_t JOFR4;		// ADC injected channel offset 4			0x20
-	__vo uint32_t HTR;			// ADC watchdog high threshold				0x24
-	__vo uint32_t LTR;			// ADC watchdog low threshold				0x28
-	__vo uint32_t SQR1;			// ADC regular sequence register 1			0x2C
-	__vo uint32_t SQR2;			// ADC regular sequence register 2			0x30
-	__vo uint32_t SQR3;			// ADC regular sequence register 3			0x34
-	__vo uint32_t JSQR;			// ADC injected sequence register			0x38
-	__vo uint32_t JDR1;			// ADC injected data register 1				0x3C
-	__vo uint32_t JDR2;			// ADC injected data register 2				0x40
-	__vo uint32_t JDR3;			// ADC injected data register 3				0x44
-	__vo uint32_t JDR4;			// ADC injected data register 4				0x48
-	__vo uint32_t DR;			// ADC regulard data register				0x4C
+	__vo uint32_t CSR;		// ADC common status register				0x00
+	__vo uint32_t CCR;		// ADC common control register				0x04
+	__vo uint32_t DDR;		// ADC Common regular data register 		0x08
 
 } ADC_Common_TypeDef;
 
@@ -306,6 +289,8 @@ typedef struct {
 // Clock enable for SYSCFG peripheral
 #define SYSCFG_PCLK_EN()	( RCC->APB2ENR |= (1<<14) )
 
+// Clock enable for ADC peripheral
+#define ADC1_PCLK_EN()		( RCC->APB2ENR |= (1<<8))
 
 // Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()		( RCC->AHB1ENR &= ~(1<<0) )
@@ -334,7 +319,8 @@ typedef struct {
 // Clock disable for SYSCFG peripheral
 #define SYSCFG_PCLK_DI()	( RCC->APB2ENR &= ~(1<<14) )
 
-
+// Clock enable for ADC peripheral
+#define ADC1_PCLK_DI()		( RCC->APB2ENR &= ~(1<<8))
 
 // Macros to reset GPIOx peripherals
 #define GPIOA_REG_RESET()		do{ ( RCC->AHB1RSTR |= (1<<0) );  ( RCC->AHB1RSTR &= ~(1<<0) ); } while(0)
@@ -497,8 +483,48 @@ typedef struct {
 #define I2C_CCR_FS					15
 
 
+// ADC Peripheral bits
+// ADC_SR
+#define ADC_SR_AWD					0		// Analog watchdog flag
+#define ADC_SR_EOC					1		// End of conversion
+#define ADC_SR_JEOC					2		// Injected channel end of conversion
+#define ADC_SR_JSTRT				3		// Injected channel start flag
+#define ADC_SR_STRT					4		// Regular channel start flag
+#define ADC_SR_OVR					5		// Overrun
+
+// ADC_CR1
+#define ADC_CR1_AWDCH				0		// Analog watchdog channel select bits
+#define ADC_CR1_EOCIE				5		// Interrupt enable for EOC
+#define ADC_CR1_AWDIE				6		// Analog watchdog interrupt enable
+#define ADC_CR1_JEOCIE				7		// Interrupt enable for injected channels
+#define ADC_CR1_SCAN				8		// Scan mode
+#define ADC_CR1_AWDSGL				9		// Enable watchdog on single channel
+#define ADC_CR1_JAUTO				10		// Automatic injected group conversion
+#define ADC_CR1_DISCEN				11		// Discontinuous mode on regular channels
+#define ADC_CR1_JDISCEN				12		// Discontinuous mode on injected channels
+#define ADC_CR1_DISCNUM				13		// Discontinuous mode channel count
+#define ADC_CR1_JAWDEN				22		// Analog watchdog enable on injected
+#define ADC_CR1_AWDEN				23		// Analog watchdog enable on regular
+#define ADC_CR1_RES					24		// Resolution
+#define ADC_CR1_OVRIE				26		// Overrun interrupt enable
+
+// ADC_CR2
+#define ADC_CR2_ADON				0		// A/D Converter ON / OFF
+#define ADC_CR2_CONT				1		// Continuous conversion
+#define ADC_CR2_DMA					8		// Direct memory access mode
+#define ADC_CR2_DDS					9		// DMA disable selection
+#define ADC_CR2_EOCS				10		// End of conversion selection
+#define ADC_CR2_ALIGN				11		// Data alignment
+#define ADC_CR2_JEXTSEL				16		// External event select for injected group
+#define ADC_CR2_JEXTEN				20		// External trigger enable for injected
+#define ADC_CR2_JSWSTART			22		// Start conversion of injected channels
+#define ADC_CR2_EXTSEL				24		// External event select for regular group
+#define ADC_CR2_EXTEN				28		// External trigger enable for regular
+#define ADC_CR2_SWSTART				30		// Start conversion of regular channels
+
 // include drivers
 #include "stm32f411xx_gpio_driver.h"
 #include "stm32f411xx_spi_driver.h"
 #include "stm32f411xx_i2c_driver.h"
+#include "adc_driver.h"
 #endif /* INC_STM32F411XX_H_ */
