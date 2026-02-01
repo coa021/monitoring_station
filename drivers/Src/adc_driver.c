@@ -69,7 +69,6 @@ void ADC_Init(ADC_Handle_t *pADCHandle) {
 
   // configure ADC prescaler
   ADC->CCR &= ~(3 << 16);
-  ADC->CCR |= (pADCHandle->ADC_Config.ADC_Prescaler << 16);
 }
 
 /*

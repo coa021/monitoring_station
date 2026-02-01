@@ -2,7 +2,6 @@
 #define ADC_DRIVER_H
 
 #include "stm32f411xx.h"
-#include <cstdint>
 #include <stdint.h>
 
 // ADC configuration structure
