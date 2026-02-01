@@ -146,13 +146,27 @@ void ADC_Enable(ADC_TypeDef *pADCx) {
  * @param[in]   pADCx - Base address of ADC peripheral
  * @return      none
  */
-void ADC_Disable(ADC_TypeDef *pADCx) {
-    pADCx->CR2 &= ~(1<< ADC_CR2_ADON);
+void ADC_Disable(ADC_TypeDef *pADCx) { pADCx->CR2 &= ~(1 << ADC_CR2_ADON); }
+
+/*
+ * @fn          ADC_StartConversion
+ * @brief       Start ADC conversion (software trigger)
+ * @param[in]   pADCx - Base address of ADC peripheral
+ * @return      none
+ */
+void ADC_StartConversion(ADC_TypeDef *pADCx) {
+  pADCx->CR2 &= ~(1 << ADC_CR2_ADON);
 }
 
-
-void ADC_StartConversion(ADC_TypeDef *pADCx);
-uint16_t ADC_GetConversionValue(ADC_TypeDef *pADCx);
+/*
+ * @fn          ADC_GetConversionValue
+ * @brief       Get ADC conversion result
+ * @param[in]   pADCx - Base address of ADC peripheral
+ * @return      Conversion result (12-bit max)
+ */
+uint16_t ADC_GetConversionValue(ADC_TypeDef *pADCx) {
+  return (uint16_t)pADCx->DR;
+}
 
 // polling mode read
 uint16_t ADC_ReadChannel(ADC_TypeDef *pADCx, uint8_t channel);
