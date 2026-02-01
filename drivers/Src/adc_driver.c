@@ -263,8 +263,30 @@ void ADC_ITConfig(ADC_TypeDef *pADCx, uint32_t ADC_IT, uint8_t EnOrDi) {
 }
 
 // flag status
-uint8_t ADC_GetFlagStatus(ADC_TypeDef *pADCx, uint32_t ADC_FLAG);
-void ADC_ClearFlag(ADC_TypeDef *pADCx, uint32_t ADC_FLAG);
+
+/*
+ * @fn          ADC_GetFlagStatus
+ * @brief       Get status of an ADC flag
+ * @param[in]   pADCx - Base address of ADC peripheral
+ * @param[in]   ADC_FLAG - Flag to check
+ * @return      FLAG_SET or FLAG_RESET
+ */
+uint8_t ADC_GetFlagStatus(ADC_TypeDef *pADCx, uint32_t ADC_FLAG) {
+  if (pADCx->SR & ADC_FLAG)
+    return FLAG_SET;
+  return FLAG_RESET;
+}
+
+/*
+ * @fn          ADC_ClearFlag
+ * @brief       Clear an ADC flag
+ * @param[in]   pADCx - Base address of ADC peripheral
+ * @param[in]   ADC_FLAG - Flag to clear
+ * @return      none
+ */
+void ADC_ClearFlag(ADC_TypeDef *pADCx, uint32_t ADC_FLAG) {
+  pADCx->SR &= ~(ADC_FLAG);
+}
 
 // simplified api helpers
 
