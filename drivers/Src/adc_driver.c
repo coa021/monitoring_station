@@ -68,7 +68,8 @@ void ADC_Init(ADC_Handle_t *pADCHandle) {
   pADCHandle->pADCx->SQR1 = tempreg;
 
   // configure ADC prescaler
-  ADC->CCR &= (3 << 16);
+  ADC->CCR &= ~(3 << 16);
+  ADC->CCR |= (pADCHandle->ADC_Config.ADC_Prescaler << 16);
 }
 
 /*
@@ -155,7 +156,7 @@ void ADC_Disable(ADC_TypeDef *pADCx) { pADCx->CR2 &= ~(1 << ADC_CR2_ADON); }
  * @return      none
  */
 void ADC_StartConversion(ADC_TypeDef *pADCx) {
-  pADCx->CR2 &= ~(1 << ADC_CR2_ADON);
+  pADCx->CR2 |= (1 << ADC_CR2_SWSTART);
 }
 
 /*
@@ -189,8 +190,9 @@ uint16_t ADC_ReadChannel(ADC_TypeDef *pADCx, uint8_t channel) {
 
   // wait for end of conversion
   while (!(pADCx->SR & ADC_FLAG_EOC))
+    ; // wait
 
-    return ADC_GetConversionValue(pADCx);
+  return ADC_GetConversionValue(pADCx);
 }
 
 // interrupt config
@@ -307,8 +309,8 @@ void ADC_SimpleInit(void) {
   adc.ADC_Config.ADC_Resolution = ADC_RESOLUTION_12BIT;
   adc.ADC_Config.ADC_ScanMode = ADC_SCAN_DISABLE;
   adc.ADC_Config.ADC_ContinuousMode = ADC_CONTINUOUS_DISABLE;
-  adc.ADC_Config.ADC_DataAligh = ADC_DATAALIGN_RIGHT;
-  adc.ADC_Config.NumOfConversion = 1;
+  adc.ADC_Config.ADC_DataAlign = ADC_DATAALIGN_RIGHT;
+  adc.ADC_Config.ADC_NumOfConversion = 1;
   adc.ADC_Config.ADC_ExternalTrigger = ADC_EXTERNALTRIG_NONE;
 
   ADC_Init(&adc);
