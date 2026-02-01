@@ -1,24 +1,28 @@
 #include <stdio.h>
 
-#include "adc_driver.h"
-#include "dht11_driver.h"
-#include "lcd_driver.h"
 #include "stm32f411xx.h"
 
-volatile uint16_t readings[10];
+static uint32_t tick_count = 0;
+
+void TIM3_IRQHandler(void) {
+	if (TIM_GetFlagStatus(TIM3, TIM_FLAG_UPDATE)) {
+		tick_count++;
+
+		// Toggle LED or do periodic task
+		GPIOC->ODR ^= (1 << 13);
+
+		TIM_ClearFlag(TIM3, TIM_FLAG_UPDATE);
+	}
+}
 
 int main(void) {
-	RCC->AHB1ENR |= (1 << 0);
-	GPIOA->MODER |= (3 << 0);
 
-	ADC_SimpleInit();
+	RCC->AHB1ENR |= (1 << 2);
+	GPIOC->MODER |= (1 << 26);
 
-	for (int i = 0; i < 10; i++) {
-		readings[i] = ADC_Read(0);
-		for (volatile int d = 0; d < 10000; d++)
-			;  // Small delay
+	// 1500ms periodic interrupt
+	TIM_InitPeriodicInterrupt(TIM3, 1500, 2);
+
+	while (1) {
 	}
-
-	while (1)
-		;
 }

@@ -13,7 +13,7 @@ typedef struct {
 
 // timer handle structure
 typedef struct {
-  TIM_RegDef_t *pTIMx;       // base addr of timer peripheral
+  TIM_RegDef_t *pTIMx;     // base addr of timer peripheral
   TIM_Config_t TIM_Config; // timer config settings
 } TIM_Handle_t;
 
@@ -56,11 +56,16 @@ void TIM_ITConfig(TIM_RegDef_t *pTIMx, uint16_t TIM_IT, uint8_t EnOrDi);
 
 // flag status
 uint8_t TIM_GetFlagStatus(TIM_RegDef_t *pTIMx, uint16_t TIM_FLAG);
+void TIM_ClearFlag(TIM_RegDef_t *pTIMx, uint16_t TIM_FLAG);
 
 // Some APIs im gonna need for this, i dont want to define them in main
 void TIM2_Delay_Init(void);
 void TIM2_Delay_us(uint32_t us);
 void TIM2_Delay_ms(uint32_t ms);
+
+// periodic interrupt general setup
+void TIM_InitPeriodicInterrupt(TIM_RegDef_t *pTIMx, uint32_t period_ms,
+                               uint8_t priority);
 
 // periodic interrupt setup using tim3
 void TIM3_PeriodicInterrupt_Init(uint32_t period_ms);
