@@ -284,6 +284,16 @@ typedef struct {
 #define ADC_COMMON_BASE     (APB2PERIPH_BASE_ADDR + 0x2300)
 #define ADC                 ((ADC_Common_TypeDef *)ADC_COMMON_BASE)
 
+// Timer peripheral definitions
+#define TIM1				((TIM_RegDef_t*)TIM1_BASE_ADDR)
+#define TIM2				((TIM_RegDef_t*)TIM2_BASE_ADDR)
+#define TIM3				((TIM_RegDef_t*)TIM3_BASE_ADDR)
+#define TIM4				((TIM_RegDef_t*)TIM4_BASE_ADDR)
+#define TIM5				((TIM_RegDef_t*)TIM5_BASE_ADDR)
+#define TIM9				((TIM_RegDef_t*)TIM9_BASE_ADDR)
+#define TIM10				((TIM_RegDef_t*)TIM10_BASE_ADDR)
+#define TIM11				((TIM_RegDef_t*)TIM11_BASE_ADDR)
+
 // Clock enable macro for GPIOx
 #define GPIOA_PCLK_EN()		( RCC->AHB1ENR |= (1<<0) )
 #define GPIOB_PCLK_EN()		( RCC->AHB1ENR |= (1<<1) )
