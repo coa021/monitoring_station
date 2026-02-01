@@ -169,7 +169,29 @@ uint16_t ADC_GetConversionValue(ADC_TypeDef *pADCx) {
 }
 
 // polling mode read
-uint16_t ADC_ReadChannel(ADC_TypeDef *pADCx, uint8_t channel);
+/*
+ * @fn          ADC_ReadChannel
+ * @brief       Read a single ADC channel (blocking)
+ * @param[in]   pADCx - Base address of ADC peripheral
+ * @param[in]   channel - Channel number (0-18)
+ * @return      Conversion result
+ */
+uint16_t ADC_ReadChannel(ADC_TypeDef *pADCx, uint8_t channel) {
+  // config for rank 1
+  ADC_ChannelConfig_t channelConfig;
+  channelConfig.ADC_Channel = channel;
+  channelConfig.ADC_SamplingTime = ADC_SAMPLETIME_84CYCLES;
+  channelConfig.ADC_Rank = 1;
+  ADC_ConfigChannel(pADCx, &channelConfig);
+
+  // start conversion
+  ADC_StartConversion(pADCx);
+
+  // wait for end of conversion
+  while (!(pADCx->SR & ADC_FLAG_EOC))
+
+    return ADC_GetConversionValue(pADCx);
+}
 
 // interrupt config
 void ADC_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnOrDi);
