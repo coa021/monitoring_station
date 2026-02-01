@@ -197,6 +197,29 @@ typedef struct {
 	__vo uint32_t FLTR;			// FLTR register (digital/analog filter register)					0x24
 } I2C_RegDef_t;
 
+typedef struct {
+	__vo uint32_t CR1;			// control register 1						0x00
+	__vo uint32_t CR2;			// control register 2						0x04
+	__vo uint32_t SMCR;			// slave mode control register				0x08
+	__vo uint32_t DIER;			// dma interrupt enable register			0x0c
+	__vo uint32_t SR;			// status register							0x10
+	__vo uint32_t EGR;			// even generation register					0x14
+	__vo uint32_t CCMR1;		// capture compare mode register 1			0x18	
+	__vo uint32_t CCMR2;		// capture compare mode register 2			0x1c
+	__vo uint32_t CCER;			// capture compare enable register			0x20
+	__vo uint32_t CNT;			// counter reg								0x24	
+	__vo uint32_t PSC;			// prescaler register						0x28
+	__vo uint32_t ARR;			// auto reload register						0x2c
+	uint32_t _reserved0;		// reserver									0x30
+	__vo uint32_t CCR1;			// capture compare reg 1					0x34
+	__vo uint32_t CCR2;			// capture comapre reg 2					0x38
+	__vo uint32_t CCR3;			// capture compare reg 3					0x3c
+	__vo uint32_t CCR4;			// capture compare reg 4					0x40
+	uint32_t _reserved1;		// reserver									0x44
+	__vo uint32_t DCR;			// DMA control register						0x48	
+	__vo uint32_t DMAR;			// DMA address for full transfer			0x4c
+	__vo uint32_t OR;			// option register							0x50
+} TIM_RegDef_t;
 
 
 // TODO: temp solution, will revisit once i finish whole chapter
@@ -292,6 +315,16 @@ typedef struct {
 // Clock enable for ADC peripheral
 #define ADC1_PCLK_EN()		( RCC->APB2ENR |= (1<<8))
 
+// clock enable for TIMx peripherals
+#define TIM1_PCLK_EN()		( RCC->APB2ENR |= (1<<0) )
+#define TIM2_PCLK_EN()		( RCC->APB1ENR |= (1<<0) )
+#define TIM3_PCLK_EN()		( RCC->APB1ENR |= (1<<1) )
+#define TIM4_PCLK_EN()		( RCC->APB1ENR |= (1<<2) )
+#define TIM5_PCLK_EN()		( RCC->APB1ENR |= (1<<3) )
+#define TIM9_PCLK_EN()		( RCC->APB2ENR |= (1<<16) )
+#define TIM10_PCLK_EN()		( RCC->APB2ENR |= (1<<17) )
+#define TIM11_PCLK_EN()		( RCC->APB2ENR |= (1<<18) )
+
 // Clock disable macros for GPIOx peripherals
 #define GPIOA_PCLK_DI()		( RCC->AHB1ENR &= ~(1<<0) )
 #define GPIOB_PCLK_DI()		( RCC->AHB1ENR &= ~(1<<1) )
@@ -316,11 +349,23 @@ typedef struct {
 #define USART1_PCLK_DI()	( RCC->APB2ENR &= ~(1<<4) )
 #define USART6_PCLK_DI()	( RCC->APB2ENR &= ~(1<<5) )
 
+
 // Clock disable for SYSCFG peripheral
 #define SYSCFG_PCLK_DI()	( RCC->APB2ENR &= ~(1<<14) )
 
 // Clock enable for ADC peripheral
 #define ADC1_PCLK_DI()		( RCC->APB2ENR &= ~(1<<8))
+
+
+// clock enable for TIMx peripherals
+#define TIM1_PCLK_DI()		( RCC->APB2ENR &= ~(1<<0) )
+#define TIM2_PCLK_DI()		( RCC->APB1ENR &= ~(1<<0) )
+#define TIM3_PCLK_DI()		( RCC->APB1ENR &= ~(1<<1) )
+#define TIM4_PCLK_DI()		( RCC->APB1ENR &= ~(1<<2) )
+#define TIM5_PCLK_DI()		( RCC->APB1ENR &= ~(1<<3) )
+#define TIM9_PCLK_DI()		( RCC->APB2ENR &= ~(1<<16) )
+#define TIM10_PCLK_DI()		( RCC->APB2ENR &= ~(1<<17) )
+#define TIM11_PCLK_DI()		( RCC->APB2ENR &= ~(1<<18) )
 
 // Macros to reset GPIOx peripherals
 #define GPIOA_REG_RESET()		do{ ( RCC->AHB1RSTR |= (1<<0) );  ( RCC->AHB1RSTR &= ~(1<<0) ); } while(0)
@@ -378,6 +423,21 @@ typedef struct {
 #define IRQ_NO_I2C2_ER			34
 #define IRQ_NO_I2C3_EV			72
 #define IRQ_NO_I2C3_ER			73
+
+// Timer IRQ's
+#define IRQ_NO_TIM1_BRK_TIM9	24
+#define IRQ_NO_TIM1_UP_TIM10	25
+#define IRQ_NO_TIM1_TRG_COM_TIM11	26
+#define IRQ_NO_TIM1_CC			27
+#define IRQ_NO_TIM2				28
+#define IRQ_NO_TIM3				29
+#define IRQ_NO_TIM4				30
+#define IRQ_NO_TIM5				50
+
+// ADC IRQ
+#define IRQ_NO_ADC				18
+
+
 
 // Generic macros section
 #define ENABLE 				1
@@ -521,6 +581,44 @@ typedef struct {
 #define ADC_CR2_EXTSEL				24		// External event select for regular group
 #define ADC_CR2_EXTEN				28		// External trigger enable for regular
 #define ADC_CR2_SWSTART				30		// Start conversion of regular channels
+
+
+// Bit position macros of Timer peripheral
+// TIM_CR1
+#define TIM_CR1_CEN					0		// Counter enable
+#define TIM_CR1_UDIS				1		// Update disable
+#define TIM_CR1_URS					2		// Update request source
+#define TIM_CR1_OPM					3		// One-pulse mode
+#define TIM_CR1_DIR					4		// Direction
+#define TIM_CR1_CMS					5		// Center-aligned mode selection
+#define TIM_CR1_ARPE				7		// Auto-reload preload enable
+#define TIM_CR1_CKD					8		// Clock division
+
+// TIM_DIER
+#define TIM_DIER_UIE				0		// Update interrupt enable
+#define TIM_DIER_CC1IE				1		// Capture/Compare 1 interrupt enable
+#define TIM_DIER_CC2IE				2		// Capture/Compare 2 interrupt enable
+#define TIM_DIER_CC3IE				3		// Capture/Compare 3 interrupt enable
+#define TIM_DIER_CC4IE				4		// Capture/Compare 4 interrupt enable
+#define TIM_DIER_TIE				6		// Trigger interrupt enable
+#define TIM_DIER_UDE				8		// Update DMA request enable
+
+// TIM_SR
+#define TIM_SR_UIF					0		// Update interrupt flag
+#define TIM_SR_CC1IF				1		// Capture/Compare 1 interrupt flag
+#define TIM_SR_CC2IF				2		// Capture/Compare 2 interrupt flag
+#define TIM_SR_CC3IF				3		// Capture/Compare 3 interrupt flag
+#define TIM_SR_CC4IF				4		// Capture/Compare 4 interrupt flag
+#define TIM_SR_TIF					6		// Trigger interrupt flag
+#define TIM_SR_CC1OF				9		// Capture/Compare 1 overcapture flag
+#define TIM_SR_CC2OF				10		// Capture/Compare 2 overcapture flag
+#define TIM_SR_CC3OF				11		// Capture/Compare 3 overcapture flag
+#define TIM_SR_CC4OF				12		// Capture/Compare 4 overcapture flag
+
+// TIM_EGR
+#define TIM_EGR_UG					0		// Update generation
+
+
 
 // include drivers
 #include "stm32f411xx_gpio_driver.h"
