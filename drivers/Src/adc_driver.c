@@ -289,9 +289,47 @@ void ADC_ClearFlag(ADC_TypeDef *pADCx, uint32_t ADC_FLAG) {
 }
 
 // simplified api helpers
-
+static uint8_t adc_initialized = 0;
 // quick init
-void ADC_SimpleInit(void);
+
+/*
+ * @fn          ADC_SimpleInit
+ * @brief       Quick initialization for single-channel polling mode
+ * @param       none
+ * @return      none
+ */
+void ADC_SimpleInit(void) {
+  if (adc_initialized)
+    return;
+
+  ADC_Handle_t adc;
+  adc.pADCx = ADC1;
+  adc.ADC_Config.ADC_Resolution = ADC_RESOLUTION_12BIT;
+  adc.ADC_Config.ADC_ScanMode = ADC_SCAN_DISABLE;
+  adc.ADC_Config.ADC_ContinuousMode = ADC_CONTINUOUS_DISABLE;
+  adc.ADC_Config.ADC_DataAligh = ADC_DATAALIGN_RIGHT;
+  adc.ADC_Config.NumOfConversion = 1;
+  adc.ADC_Config.ADC_ExternalTrigger = ADC_EXTERNALTRIG_NONE;
+
+  ADC_Init(&adc);
+  ADC_Enable(ADC1);
+
+  adc_initialized = 1;
+}
 
 // read single channel
-uint16_t ADC_Read(uint8_t channel);
+
+/*
+ * @fn          ADC_Read
+ * @brief       Read single channel (blocking) - simplified API
+ * @param[in]   channel - Channel number (0-18)
+ * @return      12-bit conversion result (0-4095)
+ *
+ * @note        Automatically initializes ADC if needed
+ *              Configure GPIO pin as analog input before calling
+ */
+uint16_t ADC_Read(uint8_t channel) {
+  if (!adc_initialized)
+    ADC_SimpleInit();
+  return ADC_ReadChannel(ADC1, channel);
+}
