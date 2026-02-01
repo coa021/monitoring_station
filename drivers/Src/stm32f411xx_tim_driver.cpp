@@ -135,12 +135,43 @@ void TIM_DeInit(TIM_RegDef_t *pTIMx) {
 }
 
 // timer control
-void TIM_Start(TIM_RegDef_t *pTIMx);
-void TIM_Stop(TIM_RegDef_t *pTIMx);
-uint32_t TIM_GetCounter(TIM_RegDef_t *pTIMx);
-void TIM_SetCounter(TIM_RegDef_t *pTIMx, uint32_t value);
+
+/*
+ * @fn          TIM_Start
+ * @brief       Start the timer counter
+ * @param[in]   pTIMx - Base address of timer peripheral
+ * @return      none
+ */
+void TIM_Start(TIM_RegDef_t *pTIMx) { pTIMx->CR1 |= (1 << TIM_CR1_CEN); }
+
+/*
+ * @fn          TIM_Stop
+ * @brief       Stop the timer counter
+ * @param[in]   pTIMx - Base address of timer peripheral
+ * @return      none
+ */
+void TIM_Stop(TIM_RegDef_t *pTIMx) { pTIMx->CR1 &= ~(1 << TIM_CR1_CEN); }
+
+/*
+ * @fn          TIM_GetCounter
+ * @brief       Get current counter value
+ * @param[in]   pTIMx - Base address of timer peripheral
+ * @return      Current counter value
+ */
+uint32_t TIM_GetCounter(TIM_RegDef_t *pTIMx) { return pTIMx->CNT; }
+
+/*
+ * @fn          TIM_SetCounter
+ * @brief       Set counter value
+ * @param[in]   pTIMx - Base address of timer peripheral
+ * @param[in]   value - Value to set
+ * @return      none
+ */
+void TIM_SetCounter(TIM_RegDef_t *pTIMx, uint32_t value) { pTIMx->CNT = value; }
 
 // interrupt config and handling
+
+
 void TIM_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnOrDi);
 void TIM_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority);
 void TIM_ClearITPendingBit(TIM_RegDef_t *pTIMx, uint16_t TIM_IT);
