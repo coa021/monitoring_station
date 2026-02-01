@@ -194,9 +194,73 @@ uint16_t ADC_ReadChannel(ADC_TypeDef *pADCx, uint8_t channel) {
 }
 
 // interrupt config
-void ADC_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnOrDi);
-void ADC_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority);
-void ADC_ITConfig(ADC_TypeDef *pADCx, uint32_t ADC_IT, uint8_t EnOrDi);
+
+/*
+ * @fn          ADC_IRQInterruptConfig
+ * @brief       Enable or disable ADC interrupt in NVIC
+ * @param[in]   IRQNumber - IRQ number
+ * @param[in]   EnOrDi - ENABLE or DISABLE
+ * @return      none
+ */
+void ADC_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnOrDi) {
+  if (EnOrDi == ENABLE) {
+    // we are enabling
+    if (IRQNumber <= 31) {
+      // program ISER0 register
+      *NVIC_ISER0 |= (1 << IRQNumber);
+    } else if (IRQNumber > 31 && IRQNumber < 64) {
+      // program ISER1 register
+      *NVIC_ISER1 |= (1 << (IRQNumber % 32));
+
+    } else if (IRQNumber >= 64 && IRQNumber < 96) {
+      // program ISER2 register
+      *NVIC_ISER2 |= (1 << (IRQNumber % 64));
+    }
+  } else {
+    // we are cleaning/disabling
+    if (IRQNumber <= 31) {
+      // program ICER0 register
+      *NVIC_ICER0 |= (1 << IRQNumber);
+    } else if (IRQNumber > 31 && IRQNumber < 64) {
+      // program ICER1 register
+      *NVIC_ICER1 |= (1 << (IRQNumber % 32));
+    } else if (IRQNumber >= 64 && IRQNumber < 96) {
+      // program ICER2 register
+      *NVIC_ICER2 |= (1 << (IRQNumber % 32));
+    }
+  }
+}
+
+/*
+ * @fn          ADC_IRQPriorityConfig
+ * @brief       Configure interrupt priority
+ * @param[in]   IRQNumber - IRQ number
+ * @param[in]   IRQPriority - Priority value
+ * @return      none
+ */
+void ADC_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority) {
+  // find IPR register
+  uint8_t iprx_index = IRQNumber / 4;
+  uint8_t iprx_section = IRQNumber % 4;
+
+  uint8_t shift_amount = (8 * iprx_section) + (8 - NO_PR_BITS_IMPLEMENTED);
+  *(NVIC_PR_BASE_ADDR + iprx_index) |= (IRQPriority << shift_amount);
+}
+
+/*
+ * @fn          ADC_ITConfig
+ * @brief       Enable or disable ADC interrupt sources
+ * @param[in]   pADCx - Base address of ADC peripheral
+ * @param[in]   ADC_IT - Interrupt source
+ * @param[in]   EnOrDi - ENABLE or DISABLE
+ * @return      none
+ */
+void ADC_ITConfig(ADC_TypeDef *pADCx, uint32_t ADC_IT, uint8_t EnOrDi) {
+  if (EnOrDi)
+    pADCx->CR1 |= ADC_IT;
+  else
+    pADCx->CR1 &= ~ADC_IT;
+}
 
 // flag status
 uint8_t ADC_GetFlagStatus(ADC_TypeDef *pADCx, uint32_t ADC_FLAG);
