@@ -97,6 +97,9 @@ void TIM_Init(TIM_Handle_t *pTIMHandle) {
 
   // clear update interrupt flag
   pTIMHandle->pTIMx->SR &= ~(1 << TIM_SR_UIF);
+
+  // start the timer
+  pTIMHandle->pTIMx->CR1 |= (1 << TIM_CR1_CEN);
 }
 
 /*
@@ -327,7 +330,7 @@ void TIM2_Delay_us(uint32_t us) {
  * @return      none
  */
 void TIM2_Delay_ms(uint32_t ms) {
-  while (--ms)
+  while (ms--)
     TIM2_Delay_us(1000);
 }
 

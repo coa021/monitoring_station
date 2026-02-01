@@ -4,12 +4,10 @@ static GPIO_Handle_t DHT11_Pin;
 // TODO: better code commentary
 // static helpers
 static void DHT11_Delay_us(uint32_t us) {
-    for (volatile uint32_t i = 0; i < us; i++)
-        ;	//
+	TIM2_Delay_us(us);
 }
 static void DHT11_Delay_ms(uint32_t ms) {
-    for (uint32_t i = 0; i < ms; i++)
-        DHT11_Delay_us(1000);
+    TIM2_Delay_ms(ms);
 }
 
 // set output
